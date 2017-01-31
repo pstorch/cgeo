@@ -545,11 +545,13 @@ public class DataStore {
 
             createIndices(db);
             insertStandardList(db);
-
         }
 
-        private void insertStandardList(SQLiteDatabase db) {
-            db.execSQL("INSERT INTO " + dbTableLists + " (_id, title, updated) VALUES (-1, 'Stored', " + System.currentTimeMillis() + ")");
+        private void insertStandardList(final SQLiteDatabase db) {
+            db.execSQL("INSERT INTO " + dbTableLists + " (_id, title, updated) VALUES ("
+                + StoredList.STANDARD_LIST_ID
+                + ", '" + CgeoApplication.getInstance().getResources().getString(R.string.list_inbox)
+                + "', " + System.currentTimeMillis() + ")");
         }
 
         private static void createIndices(final SQLiteDatabase db) {
