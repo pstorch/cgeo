@@ -31,7 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 public final class StoredList extends AbstractList {
     private static final int TEMPORARY_LIST_ID = 0;
     public static final StoredList TEMPORARY_LIST = new StoredList(TEMPORARY_LIST_ID, "<temporary>", 0); // Never displayed
-    public static final int STANDARD_LIST_ID = 1;
+    public static final int STANDARD_LIST_ID = -1;
     private final int count; // this value is only valid as long as the list is not changed by other database operations
 
     public StoredList(final int id, final String title, final int count) {
@@ -164,7 +164,7 @@ public final class StoredList extends AbstractList {
             }
 
             for (final Integer exceptListId : exceptListIds) {
-                if (exceptListId >= DataStore.customListIdOffset) {
+                if (exceptListId > 0) {
                     lists.remove(DataStore.getList(exceptListId));
                 }
             }
@@ -223,9 +223,9 @@ public final class StoredList extends AbstractList {
                         return;
                     }
                     final int newId = DataStore.createList(listName);
-                    new StoredList(newId, listName, 0);
 
-                    if (newId >= DataStore.customListIdOffset) {
+                    if (newId > 0) {
+                        new StoredList(newId, listName, 0);
                         runAfterwards.call(newId);
                     } else {
                         ActivityMixin.showToast(activity, res.getString(R.string.list_dialog_create_err));
@@ -246,9 +246,9 @@ public final class StoredList extends AbstractList {
                         return;
                     }
                     final int newId = DataStore.createList(listName);
-                    new StoredList(newId, listName, 0);
 
-                    if (newId >= DataStore.customListIdOffset) {
+                    if (newId > 0) {
+                        new StoredList(newId, listName, 0);
                         selectedLists.remove(PseudoList.NEW_LIST.id);
                         selectedLists.add(newId);
                         Settings.setLastSelectedLists(selectedLists);

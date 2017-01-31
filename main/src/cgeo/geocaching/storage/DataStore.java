@@ -168,8 +168,7 @@ public class DataStore {
      */
     private static final CacheCache cacheCache = new CacheCache();
     private static volatile SQLiteDatabase database = null;
-    private static final int dbVersion = 72;
-    public static final int customListIdOffset = 10;
+    private static final int dbVersion = 73;
     @NonNull private static final String dbName = "data";
     @NonNull private static final String dbTableCaches = "cg_caches";
     @NonNull private static final String dbTableLists = "cg_lists";
@@ -545,6 +544,12 @@ public class DataStore {
             db.execSQL(dbCreateSearchDestinationHistory);
 
             createIndices(db);
+            insertStandardList(db);
+
+        }
+
+        private void insertStandardList(SQLiteDatabase db) {
+            db.execSQL("INSERT INTO " + dbTableLists + " (_id, title, updated) VALUES (-1, 'Stored', " + System.currentTimeMillis() + ")");
         }
 
         private static void createIndices(final SQLiteDatabase db) {
@@ -868,6 +873,16 @@ public class DataStore {
                             db.execSQL("UPDATE " + dbTableWaypoints + " SET org_coords_empty = 1 WHERE latitude IS NULL AND longitude IS NULL");
                         } catch (final Exception e) {
                             Log.e("Failed to upgrade to ver. 72", e);
+                        }
+                    }
+                    // removal of customListIdOffset
+                    if (oldVersion < 73) {
+                        try {
+                            insertStandardList(db);
+                            db.execSQL("UPDATE " + dbTableCachesLists + " SET list_id = " + StoredList.STANDARD_LIST_ID + " WHERE list_id = 1");
+                            db.execSQL("UPDATE " + dbTableCachesLists + " SET list_id = list_id - 10 WHERE list_id > 0");
+                        } catch (final Exception e) {
+                            Log.e("Failed to upgrade to ver. 73", e);
                         }
                     }
                 }
@@ -2490,7 +2505,7 @@ public class DataStore {
 
     private static void deleteOrphanedRecords() {
         Log.d("Database clean: removing non-existing lists");
-        database.delete(dbTableCachesLists, "list_id <> " + StoredList.STANDARD_LIST_ID + " AND list_id NOT IN (SELECT _id + " + customListIdOffset + " FROM " + dbTableLists + ")", null);
+        database.delete(dbTableCachesLists, "list_id <> " + StoredList.STANDARD_LIST_ID + " AND list_id NOT IN (SELECT _id  FROM " + dbTableLists + ")", null);
 
         Log.d("Database clean: removing non-existing caches from attributes");
         database.delete(dbTableAttributes, "geocode NOT IN (SELECT geocode FROM " + dbTableCaches + ")", null);
@@ -2743,7 +2758,7 @@ public class DataStore {
         try {
             final String query = "SELECT l._id AS _id, l.title AS title, COUNT(c.geocode) AS count" +
                     " FROM " + dbTableLists + " l LEFT OUTER JOIN " + dbTableCachesLists + " c" +
-                    " ON l._id + " + customListIdOffset + " = c.list_id" +
+                    " ON l._id = c.list_id" +
                     " GROUP BY l._id" +
                     " ORDER BY l.title COLLATE NOCASE ASC";
 
@@ -2763,7 +2778,7 @@ public class DataStore {
             @Override
             public StoredList call(final Cursor cursor) {
                 final int count = indexCount != -1 ? cursor.getInt(indexCount) : 0;
-                return new StoredList(cursor.getInt(indexId) + customListIdOffset, cursor.getString(indexTitle), count);
+                return new StoredList(cursor.getInt(indexId), cursor.getString(indexTitle), count);
             }
         });
     }
@@ -2771,12 +2786,12 @@ public class DataStore {
     @NonNull
     public static StoredList getList(final int id) {
         init();
-        if (id >= customListIdOffset) {
+        if (id >= 0) {
             final Cursor cursor = database.query(
                     dbTableLists,
                     new String[]{"_id", "title"},
                     "_id = ? ",
-                    new String[] { String.valueOf(id - customListIdOffset) },
+                    new String[] { String.valueOf(id) },
                     null,
                     null,
                     null);
@@ -2813,10 +2828,10 @@ public class DataStore {
      *
      * @param name
      *            Name
-     * @return new listId
+     * @return new listId, 0 in case of error
      */
     public static int createList(final String name) {
-        int id = -1;
+        int id = 0;
         if (StringUtils.isBlank(name)) {
             return id;
         }
@@ -2835,7 +2850,7 @@ public class DataStore {
             database.endTransaction();
         }
 
-        return id >= 0 ? id + customListIdOffset : -1;
+        return id > 0 ? id : 0;
     }
 
     /**
@@ -2859,7 +2874,7 @@ public class DataStore {
             values.put("title", name);
             values.put("updated", System.currentTimeMillis());
 
-            count = database.update(dbTableLists, values, "_id = " + (listId - customListIdOffset), null);
+            count = database.update(dbTableLists, values, "_id = " + listId, null);
             database.setTransactionSuccessful();
         } finally {
             database.endTransaction();
@@ -2874,7 +2889,7 @@ public class DataStore {
      * @return true if the list got deleted, false else
      */
     public static boolean removeList(final int listId) {
-        if (listId < customListIdOffset) {
+        if (listId <= 0) {
             return false;
         }
 
@@ -2883,7 +2898,7 @@ public class DataStore {
         database.beginTransaction();
         boolean status = false;
         try {
-            final int cnt = database.delete(dbTableLists, "_id = " + (listId - customListIdOffset), null);
+            final int cnt = database.delete(dbTableLists, "_id = " + listId, null);
 
             if (cnt > 0) {
                 // move caches from deleted list to standard list
@@ -3219,8 +3234,8 @@ public class DataStore {
         GEOCODE_OF_GUID("SELECT geocode FROM " + dbTableCaches + " WHERE guid = ?"),
         GEOCODE_FROM_TITLE("SELECT geocode FROM " + dbTableCaches + " WHERE name = ?"),
         INSERT_SEARCH_DESTINATION("INSERT INTO " + dbTableSearchDestinationHistory + " (date, latitude, longitude) VALUES (?, ?, ?)"),
-        COUNT_TYPE_ALL_LIST("SELECT COUNT(c._id) FROM " + dbTableCaches + " c, " + dbTableCachesLists + " l  WHERE c.type = ? AND c.geocode = l.geocode AND l.list_id > 0"), // See use of COUNT_TYPE_LIST for synchronization
-        COUNT_ALL_TYPES_ALL_LIST("SELECT COUNT(c._id) FROM " + dbTableCaches + " c, " + dbTableCachesLists + " l WHERE c.geocode = l.geocode AND l.list_id  > 0"), // See use of COUNT_TYPE_LIST for synchronization
+        COUNT_TYPE_ALL_LIST("SELECT COUNT(c._id) FROM " + dbTableCaches + " c, " + dbTableCachesLists + " l  WHERE c.type = ? AND c.geocode = l.geocode AND l.list_id != " + StoredList.TEMPORARY_LIST.id), // See use of COUNT_TYPE_LIST for synchronization
+        COUNT_ALL_TYPES_ALL_LIST("SELECT COUNT(c._id) FROM " + dbTableCaches + " c, " + dbTableCachesLists + " l WHERE c.geocode = l.geocode AND l.list_id != " + StoredList.TEMPORARY_LIST.id), // See use of COUNT_TYPE_LIST for synchronization
         COUNT_TYPE_LIST("SELECT COUNT(c._id) FROM " + dbTableCaches + " c, " + dbTableCachesLists + " l WHERE c.type = ? AND c.geocode = l.geocode AND l.list_id = ?"),
         COUNT_ALL_TYPES_LIST("SELECT COUNT(c._id) FROM " + dbTableCaches + " c, " + dbTableCachesLists + " l WHERE c.geocode = l.geocode AND l.list_id = ?"), // See use of COUNT_TYPE_LIST for synchronization
         CHECK_IF_PRESENT("SELECT COUNT(*) FROM " + dbTableCaches + " WHERE geocode = ?");

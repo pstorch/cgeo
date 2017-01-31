@@ -554,7 +554,7 @@ public class CacheListActivity extends AbstractListActivity implements FilteredA
 
     private boolean isConcreteList() {
         return type == CacheListType.OFFLINE &&
-                (listId == StoredList.STANDARD_LIST_ID || listId >= DataStore.customListIdOffset);
+                (listId == StoredList.STANDARD_LIST_ID || listId > 0);
     }
 
     private boolean isInvokedFromAttachment() {

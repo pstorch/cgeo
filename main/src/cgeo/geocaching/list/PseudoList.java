@@ -10,7 +10,7 @@ import android.support.annotation.StringRes;
 
 public abstract class PseudoList extends AbstractList {
 
-    private static final int ALL_LIST_ID = 2;
+    private static final int ALL_LIST_ID = -2;
     /**
      * list entry to show all caches
      */
@@ -21,7 +21,7 @@ public abstract class PseudoList extends AbstractList {
         }
     };
 
-    private static final int NEW_LIST_ID = 3;
+    private static final int NEW_LIST_ID = -3;
     /**
      * list entry to create a new list
      */
@@ -32,7 +32,7 @@ public abstract class PseudoList extends AbstractList {
         }
     };
 
-    private static final int HISTORY_LIST_ID = 4;
+    private static final int HISTORY_LIST_ID = -4;
     /**
      * list entry to create a new list
      */
