@@ -372,7 +372,7 @@ public class NewMap extends AbstractActionBarActivity {
                             public void call(final Set<Integer> selectedListIds) {
                                 storeCaches(geocodes, selectedListIds);
                             }
-                        }, true, Collections.singleton(StoredList.TEMPORARY_LIST.id), false);
+                        }, true, Collections.<Integer>emptySet(), false);
                     } else {
                         storeCaches(geocodes, Collections.singleton(StoredList.STANDARD_LIST_ID));
                     }

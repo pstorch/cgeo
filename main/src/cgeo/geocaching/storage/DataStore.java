@@ -880,9 +880,11 @@ public class DataStore {
                     // removal of customListIdOffset
                     if (oldVersion < 73) {
                         try {
+                            // move all lists one up to make room for STANDARD_LIST
+                            db.execSQL("UPDATE " + dbTableLists + " SET _id = _id + 1");
                             insertStandardList(db);
-                            db.execSQL("UPDATE " + dbTableCachesLists + " SET list_id = " + StoredList.STANDARD_LIST_ID + " WHERE list_id = 1");
-                            db.execSQL("UPDATE " + dbTableCachesLists + " SET list_id = list_id - 10 WHERE list_id > 0");
+                            // correct all list_id's
+                            db.execSQL("UPDATE " + dbTableCachesLists + " SET list_id = list_id - 9 WHERE list_id > 1");
                         } catch (final Exception e) {
                             Log.e("Failed to upgrade to ver. 73", e);
                         }
