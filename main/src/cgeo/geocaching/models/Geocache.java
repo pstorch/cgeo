@@ -1913,6 +1913,9 @@ public class Geocache implements IWaypoint {
             if (logEntry.getType() == logType && logEntry.isOwn()) {
                 return true;
             }
+            if (isEventCache()) {
+                return true;
+            }
         }
         return false;
     }

@@ -7,17 +7,18 @@ import cgeo.geocaching.log.LogType;
 import cgeo.geocaching.models.Geocache;
 import cgeo.geocaching.models.Waypoint;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import android.support.annotation.NonNull;
-
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
 
 import java.util.ArrayList;
 import java.util.List;
+
+
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public final class MapUtils {
 
@@ -215,6 +216,8 @@ public final class MapUtils {
                 layers.add(Compatibility.getDrawable(res, offlineLogType.getOfflineLogOverlay()));
             }
             insets.add(getFoundInset(cacheListType)[resolution]);
+        } else if (cache.isEventCache() && cache.hasOwnLog(LogType.WILL_ATTEND)) {
+            layers.add(Compatibility.getDrawable(res, R.drawable.marker_will_attend));
         }
         // user modified coords
         if (showUserModifiedCoords(cache)) {
