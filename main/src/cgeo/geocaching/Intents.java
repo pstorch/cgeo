@@ -43,6 +43,7 @@ public class Intents {
     public static final String EXTRA_STORED_ENABLED = PREFIX + "storedEnabled";
 
     public static final String EXTRA_DOWNLOAD = PREFIX + "download";
+    public static final String EXTRA_MAP_DOWNLOADS = PREFIX + "map_downloads";
 
     public static final String EXTRA_TARGET_INFO = PREFIX + "targetInfo";
     /**
