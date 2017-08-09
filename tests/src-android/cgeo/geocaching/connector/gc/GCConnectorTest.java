@@ -108,18 +108,18 @@ public class GCConnectorTest extends AbstractResourceInstrumentationTestCase {
     }
 
     public static void testGetGeocodeFromUrl() {
-        assertThat(GCConnector.getInstance().getGeocodeFromUrl("some string")).isNull();
-        assertThat(GCConnector.getInstance().getGeocodeFromUrl("http://coord.info/GC12ABC")).isEqualTo("GC12ABC");
-        assertThat(GCConnector.getInstance().getGeocodeFromUrl("http://www.coord.info/GC12ABC")).isEqualTo("GC12ABC");
-        assertThat(GCConnector.getInstance().getGeocodeFromUrl("https://www.geocaching.com/geocache/GC12ABC_die-muhlen-im-schondratal-muhle-munchau")).isEqualTo("GC12ABC");
-        assertThat(GCConnector.getInstance().getGeocodeFromUrl("http://geocaching.com/geocache/GC12ABC_die-muhlen-im-schondratal-muhle-munchau")).isEqualTo("GC12ABC");
+        assertThat(GCConnector.getInstance().getGeocodeFromURL("some string")).isNull();
+        assertThat(GCConnector.getInstance().getGeocodeFromURL("http://coord.info/GC12ABC")).isEqualTo("GC12ABC");
+        assertThat(GCConnector.getInstance().getGeocodeFromURL("http://www.coord.info/GC12ABC")).isEqualTo("GC12ABC");
+        assertThat(GCConnector.getInstance().getGeocodeFromURL("https://www.geocaching.com/geocache/GC12ABC_die-muhlen-im-schondratal-muhle-munchau")).isEqualTo("GC12ABC");
+        assertThat(GCConnector.getInstance().getGeocodeFromURL("http://geocaching.com/geocache/GC12ABC_die-muhlen-im-schondratal-muhle-munchau")).isEqualTo("GC12ABC");
 
-        assertThat(GCConnector.getInstance().getGeocodeFromUrl("http://coord.info/TB1234")).isNull();
-        assertThat(GCConnector.getInstance().getGeocodeFromUrl("http://www.coord.info/TB1234")).isNull();
-        assertThat(GCConnector.getInstance().getGeocodeFromUrl("http://www.coord.info/WM1234")).isNull();
+        assertThat(GCConnector.getInstance().getGeocodeFromURL("http://coord.info/TB1234")).isNull();
+        assertThat(GCConnector.getInstance().getGeocodeFromURL("http://www.coord.info/TB1234")).isNull();
+        assertThat(GCConnector.getInstance().getGeocodeFromURL("http://www.coord.info/WM1234")).isNull();
 
         // uppercase is managed in ConnectorFactory
-        assertThat(GCConnector.getInstance().getGeocodeFromUrl("http://coord.info/gc77")).isEqualTo("gc77");
+        assertThat(GCConnector.getInstance().getGeocodeFromURL("http://coord.info/gc77")).isEqualTo("gc77");
     }
 
     public static void testHandledGeocodes() {

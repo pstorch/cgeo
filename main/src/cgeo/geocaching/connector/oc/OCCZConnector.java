@@ -18,8 +18,7 @@ public class OCCZConnector extends OCConnector {
 
     @Override
     @Nullable
-    public String getGeocodeFromUrl(@NonNull final String url) {
-        final Uri uri = Uri.parse(url);
+    public String getGeocodeFromURI(@NonNull final Uri uri) {
         if (!StringUtils.containsIgnoreCase(uri.getHost(), getShortHost())) {
             return null;
         }
@@ -33,9 +32,9 @@ public class OCCZConnector extends OCConnector {
                     return geocode;
                 }
             } catch (final NumberFormatException e) {
-                Log.e("Unexpected URL for opencaching.cz " + url);
+                Log.e("Unexpected URL for opencaching.cz " + uri.toString());
             }
         }
-        return super.getGeocodeFromUrl(url);
+        return super.getGeocodeFromURI(uri);
     }
 }

@@ -2,6 +2,7 @@ package cgeo.geocaching.connector;
 
 import cgeo.geocaching.models.Geocache;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -51,7 +52,7 @@ class UnknownConnector extends AbstractConnector {
 
     @Override
     @Nullable
-    public String getGeocodeFromUrl(@NonNull final String url) {
+    public String getGeocodeFromURI(@NonNull final Uri uri) {
         return null;
     }
 

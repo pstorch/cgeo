@@ -22,6 +22,7 @@ import cgeo.geocaching.models.Geocache;
 import cgeo.geocaching.utils.ClipboardUtils;
 import cgeo.geocaching.utils.functions.Action1;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -127,12 +128,17 @@ public abstract class AbstractConnector implements IConnector {
         return true;
     }
 
+    @Nullable
+    public String getGeocodeFromURL(@NonNull final String url) {
+        return getGeocodeFromURI(Uri.parse(url));
+    }
+
     @Override
     @Nullable
-    public String getGeocodeFromUrl(@NonNull final String url) {
+    public String getGeocodeFromURI(@NonNull final Uri uri) {
         final String urlPrefix = getCacheUrlPrefix();
-        if (StringUtils.isEmpty(urlPrefix) || StringUtils.startsWith(url, urlPrefix)) {
-            final String geocode = url.substring(urlPrefix.length());
+        if (StringUtils.isEmpty(urlPrefix) || StringUtils.startsWith(uri.toString(), urlPrefix)) {
+            final String geocode = uri.toString().substring(urlPrefix.length());
             if (canHandle(geocode)) {
                 return geocode;
             }

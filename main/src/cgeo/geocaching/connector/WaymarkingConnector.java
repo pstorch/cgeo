@@ -2,8 +2,10 @@ package cgeo.geocaching.connector;
 
 import cgeo.geocaching.models.Geocache;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -57,14 +59,19 @@ class WaymarkingConnector extends AbstractConnector {
 
     @Override
     @Nullable
-    public String getGeocodeFromUrl(@NonNull final String url) {
+    public String getGeocodeFromURI(@NonNull final Uri uri) {
         // coord.info URLs
-        final String topLevel = StringUtils.substringAfterLast(url, "coord.info/");
-        if (canHandle(topLevel)) {
-            return topLevel;
+        if (uri.getHost().equalsIgnoreCase("coord.info")) {
+            final String topLevel = uri.getLastPathSegment();
+            if (canHandle(topLevel)) {
+                return topLevel;
+            }
         }
         // waymarking URLs http://www.waymarking.com/waymarks/WMNCDT_American_Legion_Flagpole_1983_University_of_Oregon
-        final String waymark = StringUtils.substringBetween(url, "waymarks/", "_");
-        return waymark != null && canHandle(waymark) ? waymark : null;
+        if (uri.getHost().equalsIgnoreCase(getHost()) && uri.getPath().startsWith("/waymarks/")) {
+            final String waymark = StringUtils.substringBefore(uri.getLastPathSegment(), "_");
+            return waymark != null && canHandle(waymark) ? waymark : null;
+        }
+        return null;
     }
 }

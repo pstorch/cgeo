@@ -34,6 +34,7 @@ import cgeo.geocaching.models.Trackable;
 import cgeo.geocaching.storage.DataStore;
 import cgeo.geocaching.utils.AndroidRxUtils;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -43,6 +44,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
+
 
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
@@ -316,17 +318,25 @@ public final class ConnectorFactory {
     }
 
     @Nullable
-    public static String getGeocodeFromURL(@Nullable final String url) {
-        if (url == null) {
+    public static String getGeocodeFromURI(@Nullable final Uri uri) {
+        if (uri == null) {
             return null;
         }
         for (final IConnector connector : CONNECTORS) {
-            final String geocode = connector.getGeocodeFromUrl(url);
+            final String geocode = connector.getGeocodeFromURI(uri);
             if (StringUtils.isNotBlank(geocode)) {
                 return StringUtils.upperCase(geocode);
             }
         }
         return null;
+    }
+
+    @Nullable
+    public static String getGeocodeFromURL(@Nullable final String url) {
+        if (url == null) {
+            return null;
+        }
+        return getGeocodeFromURI(Uri.parse(url));
     }
 
     @NonNull

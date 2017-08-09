@@ -29,19 +29,19 @@ public class OCConnectorTest extends TestCase {
     }
 
     public static void testGetGeocodeFromUrlDe() throws Exception {
-        final IConnector connector = ConnectorFactory.getConnector("OC0028");
-        assertThat(connector.getGeocodeFromUrl("http://opencaching.de/OC0028")).isEqualTo("OC0028");
-        assertThat(connector.getGeocodeFromUrl("http://www.opencaching.de/OC0028")).isEqualTo("OC0028");
+        final OCDEConnector connector = (OCDEConnector) ConnectorFactory.getConnector("OC0028");
+        assertThat(connector.getGeocodeFromURL("http://opencaching.de/OC0028")).isEqualTo("OC0028");
+        assertThat(connector.getGeocodeFromURL("http://www.opencaching.de/OC0028")).isEqualTo("OC0028");
     }
 
     public static void testGetGeocodeFromInternalId() {
-        final IConnector connector = ConnectorFactory.getConnector("OC0028");
-        assertThat(connector.getGeocodeFromUrl("http://www.opencaching.de/viewcache.php?cacheid=151223")).isEqualTo("OCBBFE");
+        final OCDEConnector connector = (OCDEConnector) ConnectorFactory.getConnector("OC0028");
+        assertThat(connector.getGeocodeFromURL("http://www.opencaching.de/viewcache.php?cacheid=151223")).isEqualTo("OCBBFE");
     }
 
     public static void testGetGeocodeFromUrlUs() throws Exception {
-        final IConnector connector = ConnectorFactory.getConnector("OU07A0");
-        assertThat(connector.getGeocodeFromUrl("http://www.opencaching.us/viewcache.php?wp=OU07A0")).isEqualTo("OU07A0");
+        final OCApiLiveConnector connector = (OCApiLiveConnector) ConnectorFactory.getConnector("OU07A0");
+        assertThat(connector.getGeocodeFromURL("http://www.opencaching.us/viewcache.php?wp=OU07A0")).isEqualTo("OU07A0");
     }
 
     public static void testHandledGeocodes() {

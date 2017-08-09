@@ -104,12 +104,11 @@ public class OCConnector extends AbstractConnector implements SmileyCapability {
 
     @Override
     @Nullable
-    public String getGeocodeFromUrl(@NonNull final String url) {
+    public String getGeocodeFromURI(@NonNull final Uri uri) {
         // different opencaching installations have different supported URLs
 
         // host.tld/geocode
         final String shortHost = getShortHost();
-        final Uri uri = Uri.parse(url);
         if (!StringUtils.containsIgnoreCase(uri.getHost(), shortHost)) {
             return null;
         }
@@ -124,7 +123,7 @@ public class OCConnector extends AbstractConnector implements SmileyCapability {
 
         // host.tld/viewcache.php?wp=geocode
         final String secondLevel = path.startsWith("/viewcache.php") ? uri.getQueryParameter("wp") : "";
-        return (secondLevel != null && canHandle(secondLevel)) ? secondLevel : super.getGeocodeFromUrl(url);
+        return (secondLevel != null && canHandle(secondLevel)) ? secondLevel : super.getGeocodeFromURI(uri);
     }
 
     @Override

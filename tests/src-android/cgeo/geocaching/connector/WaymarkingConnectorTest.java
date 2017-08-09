@@ -8,23 +8,24 @@ import junit.framework.TestCase;
 
 public class WaymarkingConnectorTest extends TestCase {
 
-    private static IConnector getWaymarkingConnector() {
+    private static WaymarkingConnector getWaymarkingConnector() {
         final IConnector wmConnector = ConnectorFactory.getConnector("WM1234");
         assertThat(wmConnector).isNotNull();
-        return wmConnector;
+        assertThat(wmConnector.getClass()).isEqualTo(WaymarkingConnector.class);
+        return (WaymarkingConnector)wmConnector;
     }
 
     public static void testGetGeocodeFromUrl() {
         assertThat(ConnectorFactory.getGeocodeFromURL("http://coord.info/WM1234")).isEqualTo("WM1234");
         assertThat(ConnectorFactory.getGeocodeFromURL("http://www.waymarking.com/waymarks/WMNCDT_American_Legion_Flagpole_1983_University_of_Oregon")).isEqualTo("WMNCDT");
 
-        final IConnector wmConnector = getWaymarkingConnector();
+        final WaymarkingConnector wmConnector = getWaymarkingConnector();
 
-        assertThat(wmConnector.getGeocodeFromUrl("http://coord.info/WM1234")).isEqualTo("WM1234");
-        assertThat(wmConnector.getGeocodeFromUrl("http://www.waymarking.com/waymarks/WMNCDT_American_Legion_Flagpole_1983_University_of_Oregon")).isEqualTo("WMNCDT");
+        assertThat(wmConnector.getGeocodeFromURL("http://coord.info/WM1234")).isEqualTo("WM1234");
+        assertThat(wmConnector.getGeocodeFromURL("http://www.waymarking.com/waymarks/WMNCDT_American_Legion_Flagpole_1983_University_of_Oregon")).isEqualTo("WMNCDT");
 
-        assertThat(wmConnector.getGeocodeFromUrl("http://coord.info/GC12ABC")).isNull();
-        assertThat(wmConnector.getGeocodeFromUrl("http://coord.info/TB1234")).isNull();
+        assertThat(wmConnector.getGeocodeFromURL("http://coord.info/GC12ABC")).isNull();
+        assertThat(wmConnector.getGeocodeFromURL("http://coord.info/TB1234")).isNull();
     }
 
     public static void testCanHandle() {

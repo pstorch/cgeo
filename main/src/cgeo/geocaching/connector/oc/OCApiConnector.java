@@ -116,23 +116,22 @@ public class OCApiConnector extends OCConnector implements ISearchByGeocode {
 
     @Override
     @Nullable
-    public String getGeocodeFromUrl(@NonNull final String url) {
+    public String getGeocodeFromURI(@NonNull final Uri uri) {
         final String shortHost = getShortHost();
 
-        final String geocodeFromId = getGeocodeFromCacheId(url, shortHost);
+        final String geocodeFromId = getGeocodeFromCacheId(uri, shortHost);
         if (geocodeFromId != null) {
             return geocodeFromId;
         }
 
-        return super.getGeocodeFromUrl(url);
+        return super.getGeocodeFromURI(uri);
     }
 
     /**
      * get the OC1234 geocode from an internal cache id, for URLs like host.tld/viewcache.php?cacheid
      */
     @Nullable
-    protected String getGeocodeFromCacheId(final String url, final String host) {
-        final Uri uri = Uri.parse(url);
+    protected String getGeocodeFromCacheId(@NonNull final Uri uri, final String host) {
         if (!StringUtils.containsIgnoreCase(uri.getHost(), host)) {
             return null;
         }
@@ -143,7 +142,7 @@ public class OCApiConnector extends OCConnector implements ISearchByGeocode {
             final String geocode = Maybe.fromCallable(new Callable<String>() {
                 @Override
                 public String call() throws Exception {
-                    final String normalizedUrl = StringUtils.replaceIgnoreCase(url, getShortHost(), getShortHost());
+                    final String normalizedUrl = StringUtils.replaceIgnoreCase(uri.toString(), getShortHost(), getShortHost());
                     return OkapiClient.getGeocodeByUrl(OCApiConnector.this, normalizedUrl);
                 }
             }).subscribeOn(AndroidRxUtils.networkScheduler).blockingGet();

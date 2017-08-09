@@ -2,6 +2,9 @@ package cgeo.geocaching.connector.oc;
 
 import cgeo.geocaching.R;
 
+import android.net.Uri;
+
+
 import org.apache.commons.lang3.StringUtils;
 
 public final class OCDEConnector extends OCApiLiveConnector {
@@ -18,18 +21,18 @@ public final class OCDEConnector extends OCApiLiveConnector {
     }
 
     @Override
-    public String getGeocodeFromUrl(final String url) {
+    public String getGeocodeFromURI(final Uri uri) {
         for (final String mappedDomain : MAPPED_DOMAINS) {
-            if (StringUtils.containsIgnoreCase(url, mappedDomain)) {
+            if (StringUtils.containsIgnoreCase(uri.getHost(), mappedDomain)) {
                 // replace the country specific URL to not confuse the OKAPI interface
-                final String deUrl = StringUtils.replaceIgnoreCase(url, mappedDomain, "opencaching.de");
-                final String geocodeFromId = getGeocodeFromCacheId(deUrl, getShortHost());
+                final String deUrl = StringUtils.replaceIgnoreCase(uri.toString(), mappedDomain, "opencaching.de");
+                final String geocodeFromId = getGeocodeFromCacheId(Uri.parse(deUrl), getShortHost());
                 if (geocodeFromId != null) {
                     return geocodeFromId;
                 }
             }
         }
 
-        return super.getGeocodeFromUrl(url);
+        return super.getGeocodeFromURI(uri);
     }
 }

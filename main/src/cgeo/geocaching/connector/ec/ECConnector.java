@@ -23,6 +23,7 @@ import cgeo.geocaching.settings.SettingsActivity;
 import cgeo.geocaching.utils.DisposableHandler;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -251,12 +252,14 @@ public class ECConnector extends AbstractConnector implements ISearchByGeocode, 
 
     @Override
     @Nullable
-    public String getGeocodeFromUrl(@NonNull final String url) {
-        final String geocode = "EC" + StringUtils.substringAfter(url, "extremcaching.com/index.php/output-2/");
-        if (canHandle(geocode)) {
-            return geocode;
+    public String getGeocodeFromURI(@NonNull final Uri uri) {
+        if (uri.getHost().equalsIgnoreCase(getHost()) && uri.getPath().startsWith("/index.php/output-2/")) {
+            final String geocode = "EC" + uri.getLastPathSegment();
+            if (canHandle(geocode)) {
+                return geocode;
+            }
         }
-        return super.getGeocodeFromUrl(url);
+        return super.getGeocodeFromURI(uri);
     }
 
     @Override
