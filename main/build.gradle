@@ -521,7 +521,11 @@ task copyDefaultPreferencesToAndroid(dependsOn: 'installBasicDebug') {
             try {
                 project.exec {
                     executable = project.android.getAdbExe().toString()
-                    args = ['push', 'cgeo.geocaching_preferences.xml', '/data/data/cgeo.geocaching/shared_prefs/cgeo.geocaching_preferences.xml']
+                    args = ['push', 'cgeo.geocaching_preferences.xml', '/sdcard/cgeo.geocaching_preferences.xml']
+                }
+                project.exec {
+                    executable = project.android.getAdbExe().toString()
+                    args = ['-d', 'shell', 'run-as', 'cgeo.geocaching', 'cp', '/sdcard/cgeo.geocaching_preferences.xml', '/data/data/cgeo.geocaching/shared_prefs/cgeo.geocaching_preferences.xml']
                 }
             }
             // we might not actually have permission to copy the preferences on actual devices, let's continue running the app then
