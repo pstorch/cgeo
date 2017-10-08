@@ -73,6 +73,13 @@
             android:maxLength="250"
             android:minLines="5" />
 
+        <TextView
+            android:id="@+id/scaleInfo"
+            style="@style/errortext"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:text="Image might be scaled down automatically."/>
+
         <Spinner
             android:id="@+id/logImageScale"
             android:layout_width="fill_parent"
