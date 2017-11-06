@@ -645,8 +645,8 @@ public class EditWaypointActivity extends AbstractActionBarActivity implements C
                 waypoint.setPrefix(prefix);
                 waypoint.setLookup(lookup);
                 waypoint.setCoords(currentState.coords);
-                waypoint.setNote(currentState.noteText);
-                waypoint.setUserNote(currentState.userNoteText);
+                waypoint.setNote(currentState.noteText.replaceAll("<", "&lt;"));
+                waypoint.setUserNote(currentState.userNoteText.replaceAll("<", "&lt;"));
                 waypoint.setVisited(currentState.visited);
                 waypoint.setId(waypointId);
                 waypoint.setOriginalCoordsEmpty(originalCoordsEmpty);
